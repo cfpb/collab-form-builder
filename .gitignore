@@ -1,0 +1,12 @@
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite
+*.sqlite3
+node_modules
+venv/
+.DS_Store
+build
+dist
+*.egg-info

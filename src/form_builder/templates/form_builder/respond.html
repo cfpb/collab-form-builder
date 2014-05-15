@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block "print_header" %}<h2 class="print_header">Form Builder</h2>{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block "content" %}
+<div id="content">
+  <div id="form-builder">
+    <div class="container respond">
+      <div class="row">
+
+        <div class="span12">
+
+          <a class="print" href="javascript:window.print()">
+            <i class="icon-print"></i> Print this form for review purposes
+          </a>
+        
+          <h1>{{ user_form.title }}</h1>
+
+          {% if viewonly %}
+
+            <h2>
+              {% if user_form.collect_users %}
+                Submitted by <b>{{ response.user.first_name }} {{ response.user.last_name }}</b>,
+              {% else %}
+                Response ID # <b>{{ response.id }}</b>,
+              {% endif %}
+              {{ response.submission_date }}
+            </h2>
+
+            <a class="back" href="{% url 'form_builder:results' user_form.slug %}">
+                <i class="icon-chevron-left"></i> Back to form responses
+            </a>
+
+            <dl>
+            {% for field_response in response_set %}
+              <dt>{{ field_response.field.label }}</dt>
+              <dd>
+                {% if field_response.value %}
+                  {{ field_response.value|urlize|linebreaks }}
+                {% else %}
+                  <span class="no-response">(no response)</span>
+                {% endif %}
+              </dd>
+            {% endfor %}
+            </dl>
+
+            <a class="back" href="{% url 'form_builder:results' user_form.slug %}">
+                <i class="icon-chevron-left"></i> Back to form responses
+            </a>
+
+          {% else %}
+
+            <div class="instructions">
+              {{ user_form.instructions|urlize|linebreaks }}
+            </div>
+
+            {% if user_form.collect_users %}
+              <p class="alert">This form will collect your user information.</p>
+            {% endif %}
+
+            <form action="{% url 'form_builder:respond' user_form.slug %}" method="POST">
+              {% crispy response_form %}
+            </form>
+
+          {% endif %}
+
+        </div> <!-- /.span12 -->
+
+      </div> <!-- /.row -->
+    </div> <!-- /.container.respond -->
+  </div> <!-- /#form-builder -->
+</div> <!-- /#content -->
+{% endblock "content" %}
+
+{% block "js_head_scripts" %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/form-builder.min.css">
+{% endblock %}
+
+{% block "js_scripts" %}
+  <script src="{{ STATIC_URL }}js/form-builder.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/response-form-functions.js"></script>
+{% endblock %}
+
+{% block "js_ready" %}
+    $('.dateinput').datepicker();
+    $('.dateinput').datepicker("option", {
+      showOn: "both",
+      buttonImageOnly: true,
+      buttonImage: "{{ STATIC_URL }}img/icon_calendar.png",
+      buttonText: "Enter a date"
+    });
+    $('.dateinput').closest('.control-group')
+                   .children('label')
+                   .append('<span class="help-block">Format: mm/dd/yy</span>');
+    $('.help-tooltip').tooltip({
+      trigger: 'focus hover click'
+    }).click(function (e) {
+      e.preventDefault();
+    });
+
+{% endblock %}

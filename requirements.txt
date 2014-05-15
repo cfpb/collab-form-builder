@@ -1,0 +1,9 @@
+Django>=1.5
+django-crispy-forms
+South
+
+# Dev requirements
+django-nose
+nose-progressive
+factory-boy
+django-factory-boy

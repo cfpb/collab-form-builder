@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block "title" %}Form Builder{% endblock %}
+{% block "section_id" %}form-builder{% endblock %}
+{% block "print_header" %}<h2 class="print_header">Form Builder</h2>{% endblock %}
+
+{% load url from future %}
+{% load compressed %}
+
+
+{% block "content" %}
+
+<div id="content" class="admin">
+
+    <header class="project-header {{ compact_header }}">
+        <div class="row span9">
+            <div class="logo">
+                <h2 class="section">
+                    <a href="{% url 'form_builder:index' %}">Form Builder</a>
+                </h2>
+            </div>
+            <p class="info">
+                This tool helps you manage forms, surveys, and requests through
+                creation, editing, sharing, and collecting feedback. Click
+                "Create Form" to get started.
+            </p>
+        </div><!-- /row -->
+        <div class="row span3 action-button">
+                <a href="{% url "form_builder:new" %}" class="btn-huge add-form">Create Form</a>
+        </div>
+    </header><!-- /project-header -->
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <div class="row" id="form-builder">
+        {% block "admin_content" %}{% endblock "admin_content" %}
+    </div> <!-- /.row#form-builder -->
+
+</div> <!-- /#content -->
+
+{% endblock "content" %}
+
+
+{% block "js_head_scripts" %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/form-builder.min.css">
+{% endblock %}
+
+
+{% block "js_scripts" %}
+    <script type="text/javascript" src="{{ STATIC_URL }}js/form-builder.min.js"></script>
+{% endblock %}

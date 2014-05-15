@@ -1,0 +1,283 @@
+{% extends "form_builder/base.html" %}
+
+{% load crispy_forms_tags %}
+{% load url from future %}
+{% load fb_extras %}
+
+{% block "admin_content" %}
+  <!-- sidebar with form fields to drag over -->
+  <div class="span3 admin-tools"{% if formaction = "new" %} style="display:none"{% endif %}>
+      <div class="affix-top">
+          <h2>Question type</h2>
+          <ul class="available-fields">
+              <li>
+                <form action="#" method="post">
+                  <input type="hidden" value="single">
+                  <button type="button" class="btn btn-block add-field" data-field-type="single-line" title="Add a text question to your form"><i class="icon-font"></i> Text box</button>
+                </form>
+              </li>
+              <li>
+                <form action="#" method="post">
+                  <input type="hidden" value="date">
+                  <button type="button" class="btn btn-block add-field" data-field-type="date" title="Add a date field to your form"><i class="icon-calendar"></i> Date</button>
+                </form>
+              </li>
+              <li>
+                <form action="#" method="post">
+                  <input type="hidden" value="essay">
+                  <button type="button" class="btn btn-block add-field" data-field-type="multi-line" title="Add a paragraph question to your form"><i class="icon-align-left"></i> Paragraph text</button>
+                </form>
+              </li>
+              <li>
+                <form action="#" method="post">
+                  <input type="hidden" value="multiple">
+                  <button type="button" class="btn btn-block add-field" data-field-type="multiple-choice" title="Add a multiple choice question to your form"><i class="icon-circle-blank"></i> Multiple choice</button>
+                </form>
+              </li>
+              <li>
+                <form action="#" method="post">
+                  <input type="hidden" value="checkboxes">
+                  <button type="button" class="btn btn-block add-field" data-field-type="checkboxes" title="Add a checkbox question to your form"><i class="icon-check"></i> Checkboxes</button>
+                </form>
+              </li>
+          </ul>
+
+          <div class="form-actions">
+              <button type="submit" class="btn btn-inverse save save-form-button">Save</button>
+              {% if form_action != "/forms/new/" %}
+                <button type="button" class="btn btn-inverse preview preview-form-button">Preview</button>
+              {% endif %}
+              <br /><button type="button" class="btn secondary-action cancel-form-button">Back to Manage Forms</button>
+          </div>
+
+          <div id="messages"></div>
+          
+      </div>
+  </div> <!-- /.admin-tools (sidebar with form fields to add) -->
+  
+  <div class="span8 form-container">
+    
+    <a id="activate-help" class="visuallyhidden">Toggle instructions for each field.</a>
+
+    <form id="form-form" action="{{ form_action }}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="field_order" id="field_order" value="" />
+        <div class="form-options">
+            <!--% crispy form %-->
+
+            <fieldset class="{{ form.title.html_name }}">
+                <label for="{{ form.title.auto_id }}">
+                    {{ form.title.label }}
+                    {% if form.title.help_text %}
+                        <span class="help_text">
+                            <i class="icon-question-sign" title="{{ form.title.help_text }}"></i>
+                            <span>{{ form.title.help_text }}</span>
+                        </span>
+                    {% endif %}
+                </label>
+                {{ form.title }}
+                {{ form.title.errors }}
+            </fieldset>
+
+            <fieldset class="{{ form.instructions.html_name }}">
+                <label for="{{ form.instructions.auto_id }}">
+                    {{ form.instructions.label }}
+                    {% if form.instructions.help_text %}
+                        <span class="help_text">
+                            <i class="icon-question-sign" title="{{ form.instructions.help_text }}"></i>
+                            <span>{{ form.instructions.help_text }}</span>
+                        </span>
+                    {% endif %}
+                </label>
+                {{ form.instructions }}
+                {{ form.instructions.errors }}
+            </fieldset>
+
+            <fieldset class="{{ form.end_date.html_name }}">
+                <label for="{{ form.end_date.auto_id }}">
+                    {{ form.end_date.label }}
+                    {% if form.end_date.help_text %}
+                        <span class="help_text">
+                            <i class="icon-question-sign" title="{{ form.end_date.help_text }}"></i>
+                            <span>{{ form.end_date.help_text }}</span>
+                        </span>
+                    {% endif %}
+                </label>
+                {{ form.end_date }}
+                {{ form.end_date.errors }}
+            </fieldset>
+
+        </div> <!-- /.form-options -->
+
+        {{ fields.management_form }}
+
+        {% if fields|length = 0 and formaction != "new" %}
+            <p class="add-first-prompt">Click on a question type to add your first question.</p>
+        {% endif %}
+
+        <div id="fields" class="fields">
+            <ul class="sortable">
+                {% for field_form in fields %}
+                    <li class="field">
+                        <div class="draggable" align="center" title="You can drag and drop your questions to change the order they will appear in your form.">
+                            <i class="icon-reorder"></i>
+                        </div>
+                        <div class="field-controls">
+                          <!-- <form method="post"> -->
+                            <button type="button" class="delete btn btn-icon" title="Delete this question"><i class="icon-remove-sign"></i></button>
+                          <!-- </form> -->
+                        </div>
+                        {% if field_form.instance.pk %}
+                          <input type='hidden'
+                                 name="field_set-{{ forloop.counter0 }}-id"
+                                 id="id_field_set-{{ forloop.counter0 }}-id"
+                                 value={{ field_form.instance.pk }} />
+                        {% endif %}
+                        {% crispy field_form %}
+                        <label for="id_field_set-{{ forloop.counter0 }}-DELETE" class="checkbox delete-field">
+                            {{ field_form.DELETE }}
+                            Delete
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="form-options">
+
+            <fieldset class="{{ form.confirmation_text.html_name }}">
+                <label for="{{ form.confirmation_text.auto_id }}">
+                    {{ form.confirmation_text.label }}
+                    {% if form.confirmation_text.help_text %}
+                        <span class="help_text">
+                            <i class="icon-question-sign" title="{{ form.confirmation_text.help_text }}"></i>
+                            <span>{{ form.confirmation_text.help_text }}</span>
+                        </span>
+                    {% endif %}
+                </label>
+                {{ form.confirmation_text }}
+                {{ form.confirmation_text.errors }}
+            </fieldset>
+
+            <fieldset class="{{ form.collect_users.html_name }}">
+            <label for="{{ form.collect_users.auto_id }}">
+                {{ form.collect_users }}
+                {{ form.collect_users.label }}
+                {% if form.collect_users.help_text %}
+                    <span class="help_text">
+                        <i class="icon-question-sign" title="{{ form.collect_users.help_text }}"></i>
+                        <span>{{ form.collect_users.help_text }}</span>
+                    </span>
+                {% endif %}
+            </label>
+            {{ form.collect_users.errors }}
+            </fieldset>
+            {% if formaction = "new" %}
+            <input type="button" class="btn add-fields-button" value="Add some fields" />
+            {% endif %}
+
+        </div> <!-- /.form-options -->
+
+    </form> <!-- /#form-form -->
+
+  </div> <!-- /.form-container -->
+
+
+<div id="preview" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="preview-modal-label" aria-hidden="true">
+  <a class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove-sign"></i></a>
+  <div class="modal-body">
+      <iframe id="preview-frame" src=""></iframe>
+  </div>
+</div>
+
+{% endblock "admin_content" %}
+
+{% block "js_scripts" %}
+  {{ block.super }}
+
+  {% for template_name, template_form in templates %}
+    <script type="text/template" id="template-{{ template_name }}">
+      <li class="not-draggable"><div class="field-{{ template_name }} field-num-{% templatetag openvariable %} i {% templatetag closevariable %} field">
+        <div class="field-controls">
+          <form method="post">
+            <button type="button" class="btn btn-icon delete" title="Delete this question"><i class="icon-remove-sign"></i></button>
+          </form>
+        </div>
+        {% crispy template_form %}
+        <label for="id_field_set-{% templatetag openvariable %} i {% templatetag closevariable %}-DELETE" class="checkbox delete-field">
+          <input type="checkbox" id="id_field_set-{% templatetag openvariable %} i {% templatetag closevariable %}-DELETE" name="field_set-{% templatetag openvariable %} i {% templatetag closevariable %}-DELETE" />
+          Delete
+        </label>
+      </div></li>
+    </script>
+  {% endfor %}
+
+  <script type="text/template" id="field-option-add">
+    <!-- field option -->
+    <form class="edit-option">
+      <div class="input-append current-option">
+        <input class="span4" type="text" value="" placeholder="Add new option...">
+        <button class="btn btn-icon add-option" type="submit" title="Add this item"><i class="icon-plus-sign"></i></button>
+      </div>
+    </form>
+    <!-- /field option -->
+  </script>
+
+  <script type="text/template" id="field-option-remove">
+    <!-- field option -->
+    <div class="edit-option">
+      <div class="input-append current-option">
+        <input class="span4" type="text" value="{% templatetag openvariable %} label {% templatetag closevariable %}">
+        <button class="btn btn-icon btn-danger remove-option" type="button" title="Remove this item"><i class="icon-remove-sign"></i></button>
+      </div>
+    </div>
+    <!-- /field option -->
+  </script>
+
+  <script>
+    window.use_form_autosave = {{ use_form_autosave }};
+  </script>
+
+{% endblock "js_scripts" %}
+
+{% block "js_ready" %}
+    $(".admin-tools").affix({
+      offset: 16
+    });
+
+    $(".icon-question-sign").tooltip({
+      delay: 100,
+      placement: 'bottom',
+      trigger: 'focus hover click'
+    });
+
+    $(".draggable").tooltip({
+      delay: 100,
+      placement: 'bottom'
+    });
+
+    $("#activate-help").click(function() {
+      $(".help_text span").toggle();
+    });
+
+    $(".cancel-form-button").click(function(){ 
+      window.location='{% url "form_builder:index" %}';
+    });
+    $(".add-fields-button").click(function(){ $("#form-form").submit(); });
+
+    $("#id_end_date").datepicker("option", {
+      showOn: "both",
+      buttonImageOnly: true,
+      buttonImage: "{{ STATIC_URL }}img/icon_calendar.png",
+      buttonText: "Enter a date"
+    });
+    $("#id_end_date").datepicker("setDate", '{{ form.end_date.value|date:"SHORT_DATE_FORMAT" }}');
+
+    {% if use_form_autosave == 1 and formaction != "new" %}
+    setInterval(function(){$('.save-form-button').click();},10000); //save form every 10 seconds
+    $(window).unload(function(){
+      $('.save-form-button').click(); //handle any unsaved changes if user unexpectedly leaves the page
+    });
+    {% endif %}
+
+{% endblock "js_ready" %}

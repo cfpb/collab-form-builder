@@ -1,0 +1,84 @@
+{% extends "form_builder/base.html" %}
+{% load url from future %}
+
+{% block "admin_tabs" %}
+                <li class="active"><a href="#">Manage Forms</a></li>
+                <li><a href="{% url 'form_builder:new' %}">Create Form</a></li>
+{% endblock "admin_tabs" %}
+
+{% block "admin_content" %}
+
+<div class="span12">
+
+    {% if forms|length = 0 %}
+        <p class="add-first-prompt">You have no forms yet. <a href="{% url 'form_builder:new' %}">Create a form</a> to get started.</p>
+    {% else %}
+        <!-- <ul class="manage"> -->
+        <table id="forms-table" class="manage table table-hover table-bordered table-condensed">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for form in forms %}
+                <tr>
+                    <td class="form-title"><a href="{% url 'form_builder:respond' form.slug %}" class="title" title="View {{ form.title }}">{{ form.title }}</a></td>
+                    <td class="form-date">{{ form.date_created|date:"m/d/Y" }}</td>
+                    <td class="form-date">{% if form.end_date %}{{ form.end_date|date:"m/d/Y" }}{% endif %}</td>
+                    <td class="controls">
+                        <a href="{% url 'form_builder:results' form.slug %}" class="results" title="View form results">
+                          <small class="count">
+                            {% with count=form.response_set.count %}
+                              ({{ count }})
+                            {% endwith %} 
+                          </small>
+                          <i class="icon-list"></i>
+                        </a>
+                        <a href="{% url 'form_builder:respond' form.slug %}" class="share" title="Share this form with participants"><i class="icon-link"></i></a>
+                        <a href="{% url 'form_builder:edit' form.slug %}" class="edit" title="Edit this form"><i class="icon-pencil"></i></a>
+                        <a href="{% url 'form_builder:duplicate' form.slug %}" class="duplicate" title="Duplicate this form"><i class="icon-copy"></i></a>
+                        {% if form.can_be_deleted %}
+                            <a href="{% url 'form_builder:delete' form.slug %}" class="delete" title="Delete this form"><i class="icon-remove-sign"></i></a>
+                        {% else %}
+                            <a href="" class="inactive" title="Cannot delete form with responses"><i class="icon-remove-sign disabled"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+</div>
+
+<div id="share" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="share-modal-label" aria-hidden="true">
+    <a class="close" data-dismiss="modal" aria-hidden="true"><i class="icon-remove-sign"></i></a>
+    <div class="modal-body">
+        <p>Copy the URL below to share this form. <i>(press Ctrl+C)</i></p>
+        <input type="text" class="share-link" />
+    </div>
+</div>
+
+{% endblock "admin_content" %}
+
+{% block "js_scripts" %}
+    <script src="{{ STATIC_URL }}js/form-builder.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+{% block "js_ready" %}
+  $('#forms-table').dataTable({
+    "aaSorting": [ [1, "asc"] ],
+    "aoColumnDefs": [
+      { "bSortable": false, "aTargets": [ 3 ] }
+    ],
+    "bFilter": false,
+    "bPaginate": false,
+    "bInfo": false,
+    "bSortClasses": false
+  });
+{% endblock %}

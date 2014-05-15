@@ -1,0 +1,30 @@
+{% extends "form_builder/base.html" %}
+
+{% block "admin_tabs" %}
+    <li class="active"><a href="#">Manage Forms</a></li>
+    <li><a href="{% url 'form_builder:new' %}">Create Form</a></li>
+{% endblock "admin_tabs" %}
+
+{% block "content" %}
+<div id="content">
+    <div id="form-builder" class="container thanks">
+        <div class="container thanks">
+
+            <h1>Thanks for filling out our form!</h1>
+            
+            {% if form.confirmation_text %}
+                {{ form.confirmation_text|urlize|linebreaks }}
+            {% elif form_title %}
+                <p>Thank for for completing <b>{{ form_title }}</b>.</p>
+            {% else %}
+                <p>Thank you for completing <b>{{ form.title }}</b>.</p>
+            {% endif %}
+
+            {% if form_response %}
+            <p>You filled out this form at {{ form_response.submission_date }}</p>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock "content" %}

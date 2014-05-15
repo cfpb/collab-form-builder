@@ -1,0 +1,123 @@
+{% extends "form_builder/base.html" %}
+{% load url from future %}
+
+{% block "admin_tabs" %}
+                <li class="active"><a href="{% url 'form_builder:index' %}">Manage Forms</a></li>
+                <li><a href="{% url 'form_builder:new' %}">Create Form</a></li>
+                <!-- <li class="active"><a href="#">Form Results</a></li> -->
+{% endblock "admin_tabs" %}
+
+{% block "admin_content" %}
+
+    <div class="row">
+        <h4 class="span8">Form results for {{ form.title }}</h4>
+        <div class="csv-links span4">
+            {% if new_reponses|length > 0 %}
+                <div>
+                    {% if new_responses == 1 %}
+                        1 new response
+                    {% else %}
+                        {{ new_responses|length }} new responses 
+                    {% endif %}
+                    <a class="download"
+                       href="{% url 'form_builder:results_csv' form.slug %}?new=1">
+                        <i class="icon-download-alt"></i> Download to Excel
+                    </a>
+                </div>
+            {% endif %}
+            <div>
+                {{ response_count }} total responses 
+                <a class="download"
+                   href="{% url 'form_builder:results_csv' form.slug %}">
+                    <i class="icon-download-alt"></i> Download to Excel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="show-buttons">
+        <form name="show-form" id="show-form">
+            <fieldset>
+                <legend>Show:</legend>
+                <label>
+                    <input type="radio" name="show" id="show-all" 
+                           value="all" {% if not new %} checked="checked"{% endif %}/> All responses
+                </label>
+                <label>
+                    <input type="radio" name="show" id="show-new"
+                           value="new" {% if new %} checked="checked"{% endif %}/> New responses
+                </label>
+            </fieldset>
+        </form>
+    </div>
+
+
+    <table id="results-table" class="table table-hover table-bordered table-condensed">
+        <thead>
+            <tr>
+                <th>Respondent</th>
+                <th>Date/Time</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for response in responses %}
+                <tr>
+                    <td>
+                        <a href="{% url 'form_builder:view_response' form.slug response.id %}">
+                        {% if form.collect_users %}
+                            {{ response.user.first_name }} {{ response.user.last_name }}
+                        {% else %}
+                            {{ response.id }}
+                        {% endif %}
+                        </a>
+                    </td>
+                    <td>{{ response.submission_date }}</td>
+                    <td>{% if response.archived %}Archived{% else %}New{% endif %}</td>
+                    <td>
+                        {% if response.archived %}
+                            <a href="{% url 'form_builder:status_mark_new' response.id %}" class="toggle-status">Mark as new</a>
+                        {% else %}
+                            <a href="{% url 'form_builder:status_archive' response.id %}" class="toggle-status">Archive</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}  
+        </tbody>
+        {% if new_responses %}
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><a href="{% url 'form_builder:archive_all' form.slug %}" class="toggle-status" onclick="return confirm('Mark all responses to this form as Archived, including ones that may not be currently visible?')">Archive all</a></td>
+                </tr>
+            </tfoot>
+        {% endif %}
+    </table>
+
+{% endblock "admin_content" %}
+
+{% block "js_scripts" %}
+    <script src="{{ STATIC_URL }}js/form-builder.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+{% endblock %}
+
+{% block "js_ready" %}
+  $('#results-table').dataTable({
+    "aaSorting": [ [1, "asc"] ],
+    "aoColumnDefs": [
+      { "bSortable": false, "aTargets": [ 3 ] }
+    ],
+    "bPaginate": false,
+    "bSortClasses": false
+  });
+  $('#show-form input').click( function() {
+    if ( $(this).val() == 'new' ) {
+      window.location = "{% url 'form_builder:results' form.slug %}?new=1";
+    } else {
+      window.location = "{% url 'form_builder:results' form.slug %}";
+    }
+  });
+{% endblock %}

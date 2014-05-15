@@ -1,0 +1,11 @@
+{% extends "notifications/email/base_notification.txt" %}
+
+{% block "body" %}
+Hello {{ n.target.first_name }}!
+
+We're writing to let you know that {{ n.actor.first_name }} {{ n.actor.last_name }} completed your form "{{ n.obj }}" in the form builder.
+
+You can view the results in your form builder.
+
+Thanks.
+{% endblock %}

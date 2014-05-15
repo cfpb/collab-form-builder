@@ -1,0 +1,11 @@
+{% extends "notifications/email/base_notification.html" %}
+
+{% block "body" %}
+<p>Hello {{ n.target.first_name }}!</p>
+
+<p>We're writing to let you know that <a href="http://team.cfpb.local/staff/person/{{ n.actor.get_profile.stub }}/">{{ n.actor.first_name }} {{ n.actor.last_name }}</a> completed your form "{{ n.obj }}" in the form builder.</p>
+
+<p>You can view the results in your <a href="http://team.cfpb.local/forms/">form builder</a>.</p>
+
+<p>Thanks.</p>
+{% endblock %}
