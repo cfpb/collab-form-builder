@@ -175,6 +175,12 @@ def respond(req, id):
                                                              req.user.username)
     if not already_responded:
 
+        if req.GET:
+            for field in user_form.field_set.all():
+                if req.GET.has_key(field.label):
+                    field.default_value = req.GET[field.label]
+                    field.save()
+                
         response_form = ResponseForm(
             req.POST or None, form=user_form, user=req.user)
 
