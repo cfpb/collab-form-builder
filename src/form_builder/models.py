@@ -3,7 +3,7 @@ import re
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _, ugettext
-from django.contrib.auth.models import User
+from collab.settings import AUTH_USER_MODEL
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 
@@ -45,7 +45,7 @@ def unique_slug(item, slug_source, slug_field):
 
 
 class Form(models.Model):
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(AUTH_USER_MODEL)
     title = models.CharField(_("Title"),
                              max_length=255,
                              help_text=_("Give your form a name."))
@@ -172,7 +172,7 @@ class Field(models.Model):
 
 
 class FormResponse(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(AUTH_USER_MODEL, blank=True, null=True)
     form = models.ForeignKey(Form, related_name='response_set')
     submission_date = models.DateTimeField(_("Submission Date"),
                                            auto_now_add=True)
