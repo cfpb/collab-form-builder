@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 
 class PermissionsTest(TestCase):
-    fixtures = ['form-fixtures.json']
+    fixtures = ['core-test-fixtures.json']
     csrf_checks = False
 
     @property
