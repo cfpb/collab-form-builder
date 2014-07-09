@@ -344,7 +344,7 @@ def results_csv(req, id):
     http_response['Content-Disposition'] = 'attachment; filename="results.csv"'
 
     writer = csv.writer(http_response)
-    labels = [field.label for field in form.field_set.all()]
+    labels = [normalize(field.label) for field in form.field_set.all()]
     labels.insert(0, "Date/Time")
     if form.collect_users:
         labels.insert(0, "User")
