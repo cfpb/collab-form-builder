@@ -180,7 +180,7 @@ def respond(req, id):
                 if req.GET.has_key(field.label):
                     field.default_value = req.GET[field.label]
                     field.save()
-                
+
         response_form = ResponseForm(
             req.POST or None, form=user_form, user=req.user)
 
@@ -356,8 +356,11 @@ def results_csv(req, id):
                     in response.fieldresponse_set.all()]
             data.insert(0, response.submission_date)
             if form.collect_users:
-                data.insert(0, normalize(response.user.first_name) + ' ' +
-                            normalize(response.user.last_name))
+                if response.user:
+                    data.insert(0, normalize(response.user.first_name) + ' ' +
+                                normalize(response.user.last_name))
+                else:
+                    data.insert(0, "anonymous")
             writer.writerow(data)
     else:
         for response in form.response_set.all():
@@ -368,8 +371,11 @@ def results_csv(req, id):
                     in response.fieldresponse_set.all()]
             data.insert(0, response.submission_date)
             if form.collect_users:
-                data.insert(0, normalize(response.user.first_name) + ' ' +
-                            normalize(response.user.last_name))
+                if response.user:
+                    data.insert(0, normalize(response.user.first_name) + ' ' +
+                                normalize(response.user.last_name))
+                else:
+                    data.insert(0, "anonymous")
             writer.writerow(data)
 
     return http_response
