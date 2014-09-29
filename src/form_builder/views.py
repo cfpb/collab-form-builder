@@ -193,10 +193,20 @@ def respond(req, id):
             url = "/forms/results/%s/" % user_form.slug
 
             if user_form.owner != req.user:
+                if user_form.collect_users:
+                    title = '%s %s submitted the "%s" form' % \
+                        (req.user.first_name, req.user.last_name, user_form)
+                    text_template = 'form_respond.txt'
+                    html_template = 'form_respond.html'
+                else:
+                    title = 'Someone submitted the "%s" form' % user_form
+                    text_template = 'form_respond_anonymous.txt'
+                    html_template = 'form_respond_anonymous.html'
+
                 email_info = EmailInfo(
                     subject=title,
-                    text_template='form_builder/email/form_respond.txt',
-                    html_template='form_builder/email/form_respond.html',
+                    text_template='form_builder/email/%s' % text_template,
+                    html_template='form_builder/email/%s' % html_template,
                     to_address=user_form.owner.email
                 )
 
