@@ -52,6 +52,7 @@ class Form(models.Model):
     slug = models.SlugField(_("Slug"),
                             editable=False,
                             unique=True,
+                            max_length=255,
                             blank=True)
     instructions = models.TextField(_("Form instructions"),
                                     null=True,
