@@ -173,8 +173,6 @@ def respond(req, id):
     user_form = get_object_or_404(Form, slug=id)
     already_responded = AnonymousResponse.objects.check_dupe(user_form.id,
                                                              req.user.username)
-    is_closed = user_form.is_closed()
-
     if not already_responded:
 
         if req.GET:
@@ -186,7 +184,7 @@ def respond(req, id):
         response_form = ResponseForm(
             req.POST or None, form=user_form, user=req.user)
 
-        if response_form.is_valid() and not is_closed:
+        if response_form.is_valid() and not user_form.is_closed():
             form_response = response_form.save()
 
             #set notification
