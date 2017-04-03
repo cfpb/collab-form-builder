@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block "title" %}{{ user_form.title }}{% endblock %}
 {% block "print_header" %}<h2 class="print_header">Form Builder</h2>{% endblock %}
 
 {% load crispy_forms_tags %}
@@ -54,7 +55,7 @@
 
 	    {% if user_form.is_closed %}
 
-	      <p class="alert">This form has closed. Please contact {{ user_form.owner }} if you need further assistance.</p>
+	      <p class="alert">This form has closed. Please contact <a href="mailto:{{ user_form.owner }}">{{ user_form.owner }}</a> if you need further assistance.</p>
 
 	    {% else %}
 
