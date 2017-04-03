@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% block "title" %}{{ user_form.title }}{% endblock %}
 {% block "print_header" %}<h2 class="print_header">Form Builder</h2>{% endblock %}
 
 {% load crispy_forms_tags %}
@@ -52,17 +53,26 @@
 
           {% else %}
 
-            <div class="instructions">
-              {{ user_form.instructions|urlize|linebreaks }}
-            </div>
+	    {% if user_form.is_closed %}
 
-            {% if user_form.collect_users %}
-              <p class="alert">This form will collect your user information.</p>
-            {% endif %}
+	      <p class="alert">This form has closed. Please contact <a href="mailto:{{ user_form.owner }}">{{ user_form.owner }}</a> if you need further assistance.</p>
 
-            <form action="{% url 'form_builder:respond' user_form.slug %}" method="POST">
-              {% crispy response_form %}
-            </form>
+	    {% else %}
+
+              <div class="instructions">
+                {{ user_form.instructions|urlize|linebreaks }} 
+	        <p>This form will close on {{ user_form.end_date|date:"F jS, Y" }} at 11:59:59 p.m. Eastern Time.</p>
+              </div>
+
+              {% if user_form.collect_users %}
+                <p class="alert">This form will collect your user information.</p>
+              {% endif %}
+
+              <form action="{% url 'form_builder:respond' user_form.slug %}" method="POST">
+                {% crispy response_form %}
+              </form>
+
+	    {% endif %}
 
           {% endif %}
 

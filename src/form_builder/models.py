@@ -1,3 +1,4 @@
+from datetime import date
 from hashlib import md5
 import re
 
@@ -111,6 +112,9 @@ class Form(models.Model):
 
     def can_be_deleted(self):
         return self.response_set.count() == 0
+
+    def is_closed(self):
+        return date.today() > self.end_date
 
 
 class Field(models.Model):
