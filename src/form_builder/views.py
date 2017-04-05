@@ -74,7 +74,8 @@ def new(req):
 
     if form_form.is_valid() and field_form_set.is_valid():
         custom_form = form_form.save(commit=False)
-        custom_form.owner = req.user
+        custom_form.save()
+        custom_form.owner.add(req.user)
         custom_form.save()
         field_form_set = FieldFormSet(req.POST, instance=custom_form)
         if field_form_set.is_valid():

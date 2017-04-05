@@ -9,7 +9,6 @@ class FieldInline(admin.StackedInline):
 
 class FormAdmin(admin.ModelAdmin):
     inlines = [FieldInline]
-    list_display = ['title', 'owner']
 
 
 class FieldResponseInline(admin.StackedInline):

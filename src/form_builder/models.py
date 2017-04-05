@@ -46,7 +46,7 @@ def unique_slug(item, slug_source, slug_field):
 
 
 class Form(models.Model):
-    owner = models.ForeignKey(AUTH_USER_MODEL)
+    owner = models.ManyToManyField(AUTH_USER_MODEL, null=True)
     title = models.CharField(_("Title"),
                              max_length=255,
                              help_text=_("Give your form a name."))
