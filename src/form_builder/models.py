@@ -52,10 +52,12 @@ class Form(models.Model):
                              max_length=255,
                              help_text=_("Give your form a name."))
     slug = models.SlugField(_("Slug"),
-                            editable=False,
+                            editable=True,
                             unique=True,
                             max_length=255,
-                            blank=True)
+                            blank=True,
+                            help_text=_("This will modify the URL.")
+                            )
     instructions = models.TextField(_("Form instructions"),
                                     null=True,
                                     blank=True,
