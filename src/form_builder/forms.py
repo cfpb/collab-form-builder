@@ -16,8 +16,8 @@ from . import models
 class FormForm(forms.ModelForm):
     class Meta:
         model = models.Form
-        fields = ('title', 'instructions', 'end_date', 'confirmation_text',
-                  'collect_users',)
+        fields = ('title', 'instructions', 'end_date',
+                  'confirmation_text', 'collect_users',)
 
     def __init__(self, *args, **kwargs):
         super(FormForm, self).__init__(*args, **kwargs)

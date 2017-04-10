@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 
+from core.models import Person
 from core.notifications.email import EmailInfo
 from core.notifications.models import Notification
 
@@ -106,9 +107,14 @@ def edit(req, id):
     context = RequestContext(req)
     context['compact_header'] = 'compact-header'
     context["use_form_autosave"] = use_form_autosave
+    context['custom_form'] = custom_form
 
     if form_form.is_valid() and field_form_set.is_valid():
         custom_form = form_form.save()
+        if req.POST['owner_stub']:
+            person = Person.objects.get(stub=req.POST.get('owner_stub', '').strip())
+            collab_user = person.user
+            custom_form.owner.add(collab_user)
         field_form_set.save()
 
         try:
@@ -166,7 +172,7 @@ def edit(req, id):
                       form_action=reverse('form_builder:edit',
                       args=[custom_form.slug]),
                       templates=create_templates()),
-        context_instance=context)
+                      context_instance=context)
 
 
 @login_required

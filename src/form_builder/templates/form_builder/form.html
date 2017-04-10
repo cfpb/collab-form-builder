@@ -107,6 +107,41 @@
                 {{ form.end_date.errors }}
             </fieldset>
 
+{% comment %}
+            <fieldset class="{{ form.owner.html_name }}">
+                <label for="{{ form.owner.auto_id }}">
+                    {{ form.owner.label }}
+                    {% if form.owner.help_text %}
+                        <span class="help_text">
+                            <i class="icon-question-sign" title="{{ form.owner.help_text }}"></i>
+                            <span>{{ form.owner.help_text }}</span>
+                        </span>
+                    {% endif %}
+                </label>
+                {{ form.owner }}
+                <input type="hidden" name="owner_stub" id="owner_stub"></input>
+                {{ form.owner.errors }}
+            </fieldset>
+{% endcomment %}
+
+            <fieldset class="owners">
+                <label for="add_owner">
+                    Add an owner
+                    <span class="help_text">
+                        <i class="icon-question-sign" title="Search for a person to give them permission to edit this form and see its responses."></i>
+                        <span>Search for a person to give them permission to edit this form and see its responses.</span>
+                    </span>
+                </label>
+                <input type="text" name="add_owner" id="add_owner">
+                <input type="hidden" name="owner_stub" id="owner_stub">
+                Current owner(s):
+                <ul>
+                {% for o in custom_form.owner.values %}
+                    <li><a href="mailto:{{ o.email }}">{{ o.first_name }} {{ o.last_name }}</a></li>
+                {% endfor %}
+                </ul>
+            </fieldset>
+
         </div> <!-- /.form-options -->
 
         {{ fields.management_form }}
@@ -279,5 +314,19 @@
       $('.save-form-button').click(); //handle any unsaved changes if user unexpectedly leaves the page
     });
     {% endif %}
+
+    $(".owner input").keypress(function(event) {
+      if (event.which == 13) {
+        event.preventDefault();
+      }
+    });
+
+    $("#add_owner").autocomplete({
+      source: "{% url "search:persons_json" %}",
+      select: function(event, ui) {
+        $("#add_owner").attr("value", ui.item.label);
+        $("#owner_stub").attr("value", ui.item.stub);
+      }
+    });
 
 {% endblock "js_ready" %}
