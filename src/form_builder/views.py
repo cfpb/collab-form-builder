@@ -199,7 +199,7 @@ def respond(req, id):
                 (req.user.first_name, req.user.last_name, user_form)
             url = "/forms/results/%s/" % user_form.slug
 
-            if user_form.owner != req.user:
+            if req.user not in user_form.owner.all():
                 if user_form.collect_users:
                     title = '%s %s submitted the "%s" form' % \
                         (req.user.first_name, req.user.last_name, user_form)
@@ -210,11 +210,15 @@ def respond(req, id):
                     text_template = 'form_respond_anonymous.txt'
                     html_template = 'form_respond_anonymous.html'
 
+                recipient_list = ''
+                for o in user_form.owner:
+                    recipient_list += o.email + ';'
+
                 email_info = EmailInfo(
                     subject=title,
                     text_template='form_builder/email/%s' % text_template,
                     html_template='form_builder/email/%s' % html_template,
-                    to_address=user_form.owner.email
+                    to_address=recipient_list
                 )
 
                 Notification.set_notification(req.user, req.user, "submitted",
