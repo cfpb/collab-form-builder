@@ -184,7 +184,7 @@ def respond(req, id):
         response_form = ResponseForm(
             req.POST or None, form=user_form, user=req.user)
 
-        if response_form.is_valid() and not user_form.is_closed():
+        if not user_form.is_closed and response_form.is_valid():
             form_response = response_form.save()
 
             #set notification

@@ -113,8 +113,10 @@ class Form(models.Model):
     def can_be_deleted(self):
         return self.response_set.count() == 0
 
+    @property
     def is_closed(self):
-        return date.today() > self.end_date
+        if self.end_date:
+            return date.today() > self.end_date
 
 
 class Field(models.Model):
