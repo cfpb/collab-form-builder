@@ -61,7 +61,9 @@
 
               <div class="instructions">
                 {{ user_form.instructions|urlize|linebreaks }} 
-	        <p>This form will close on {{ user_form.end_date|date:"F jS, Y" }} at 11:59:59 p.m. Eastern Time.</p>
+              {% if user_form.end_date %}
+                <p>This form will close on {{ user_form.end_date|date:"F jS, Y" }} at 11:59:59 p.m. Eastern Time.</p>
+              {% endif %}
               </div>
 
               {% if user_form.collect_users %}

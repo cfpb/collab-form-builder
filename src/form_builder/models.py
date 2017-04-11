@@ -114,7 +114,10 @@ class Form(models.Model):
         return self.response_set.count() == 0
 
     def is_closed(self):
-        return date.today() > self.end_date
+        if self.end_date:
+            return date.today() > self.end_date
+
+        return False
 
 
 class Field(models.Model):
