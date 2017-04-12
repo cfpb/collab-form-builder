@@ -5,8 +5,9 @@
 {% load fb_extras %}
 
 {% block "admin_content" %}
+  {% if formaction != "new" %}
   <!-- sidebar with form fields to drag over -->
-  <div class="span3 admin-tools"{% if formaction = "new" %} style="display:none"{% endif %}>
+  <div class="span3 admin-tools">
       <div class="affix-top">
           <h2>Question type</h2>
           <ul class="available-fields">
@@ -54,6 +55,7 @@
           
       </div>
   </div> <!-- /.admin-tools (sidebar with form fields to add) -->
+  {% endif %}
   
   <div class="span8 form-container">
     
@@ -107,10 +109,11 @@
                 {{ form.end_date.errors }}
             </fieldset>
 
-{% comment %}
-    TODO: Add front-end indicator that added owner is pending a save.
-    TODO: Add method for removing an owner.
-{% endcomment %}
+          {% if formaction != "new" %}
+            {% comment %}
+              TODO: Add front-end indicator that added owner is pending a save.
+              TODO: Add method for removing an owner.
+            {% endcomment %}
             <fieldset class="owners">
                 Owner(s):
                 <ul>
@@ -129,6 +132,7 @@
                 <p style="margin-top: -1em;font-style: italic;">You must save the form for the new owner to take effect. If you need to remove an owner, please email Intranet support.</p>
                 <input type="hidden" name="owner_stub" id="owner_stub">
             </fieldset>
+          {% endif %}
 
         </div> <!-- /.form-options -->
 
