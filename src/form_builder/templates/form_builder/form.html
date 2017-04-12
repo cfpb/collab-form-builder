@@ -45,9 +45,9 @@
           <div class="form-actions">
               <button type="submit" class="btn btn-inverse save save-form-button">Save</button>
               {% if form_action != "/forms/new/" %}
-                <button type="button" class="btn btn-inverse preview preview-form-button">Preview</button>
+                <button type="button" class="btn btn-inverse preview preview-form-button">Save & open</button>
               {% endif %}
-              <br /><button type="button" class="btn secondary-action cancel-form-button">Back to Manage Forms</button>
+              <br /><button type="button" class="btn secondary-action cancel-form-button">Back to Form Builder</button>
           </div>
 
           <div id="messages"></div>
@@ -108,23 +108,16 @@
             </fieldset>
 
 {% comment %}
-            <fieldset class="{{ form.owner.html_name }}">
-                <label for="{{ form.owner.auto_id }}">
-                    {{ form.owner.label }}
-                    {% if form.owner.help_text %}
-                        <span class="help_text">
-                            <i class="icon-question-sign" title="{{ form.owner.help_text }}"></i>
-                            <span>{{ form.owner.help_text }}</span>
-                        </span>
-                    {% endif %}
-                </label>
-                {{ form.owner }}
-                <input type="hidden" name="owner_stub" id="owner_stub"></input>
-                {{ form.owner.errors }}
-            </fieldset>
+    TODO: Add front-end indicator that added owner is pending a save.
+    TODO: Add method for removing an owner.
 {% endcomment %}
-
             <fieldset class="owners">
+                Owner(s):
+                <ul>
+                {% for o in custom_form.owner.values %}
+                    <li><a href="mailto:{{ o.email }}">{{ o.first_name }} {{ o.last_name }}</a></li>
+                {% endfor %}
+                </ul>
                 <label for="add_owner">
                     Add an owner
                     <span class="help_text">
@@ -133,13 +126,8 @@
                     </span>
                 </label>
                 <input type="text" name="add_owner" id="add_owner">
+                <p style="margin-top: -1em;font-style: italic;">You must save the form for the new owner to take effect. If you need to remove an owner, please email Intranet support.</p>
                 <input type="hidden" name="owner_stub" id="owner_stub">
-                Current owner(s):
-                <ul>
-                {% for o in custom_form.owner.values %}
-                    <li><a href="mailto:{{ o.email }}">{{ o.first_name }} {{ o.last_name }}</a></li>
-                {% endfor %}
-                </ul>
             </fieldset>
 
         </div> <!-- /.form-options -->
