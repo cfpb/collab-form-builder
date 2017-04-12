@@ -5,8 +5,9 @@
 {% load fb_extras %}
 
 {% block "admin_content" %}
+  {% if formaction != "new" %}
   <!-- sidebar with form fields to drag over -->
-  <div class="span3 admin-tools"{% if formaction = "new" %} style="display:none"{% endif %}>
+  <div class="span3 admin-tools">
       <div class="affix-top">
           <h2>Question type</h2>
           <ul class="available-fields">
@@ -45,15 +46,16 @@
           <div class="form-actions">
               <button type="submit" class="btn btn-inverse save save-form-button">Save</button>
               {% if form_action != "/forms/new/" %}
-                <button type="button" class="btn btn-inverse preview preview-form-button">Preview</button>
+                <button type="button" class="btn btn-inverse preview preview-form-button">Save & open</button>
               {% endif %}
-              <br /><button type="button" class="btn secondary-action cancel-form-button">Back to Manage Forms</button>
+              <br /><button type="button" class="btn secondary-action cancel-form-button">Back to Form Builder</button>
           </div>
 
           <div id="messages"></div>
           
       </div>
   </div> <!-- /.admin-tools (sidebar with form fields to add) -->
+  {% endif %}
   
   <div class="span8 form-container">
     
@@ -106,6 +108,31 @@
                 {{ form.end_date }}
                 {{ form.end_date.errors }}
             </fieldset>
+
+          {% if formaction != "new" %}
+            {% comment %}
+              TODO: Add front-end indicator that added owner is pending a save.
+              TODO: Add method for removing an owner.
+            {% endcomment %}
+            <fieldset class="owners">
+                Owner(s):
+                <ul>
+                {% for o in custom_form.owner.values %}
+                    <li><a href="mailto:{{ o.email }}">{{ o.first_name }} {{ o.last_name }}</a></li>
+                {% endfor %}
+                </ul>
+                <label for="add_owner">
+                    Add an owner
+                    <span class="help_text">
+                        <i class="icon-question-sign" title="Search for a person to give them permission to edit this form and see its responses."></i>
+                        <span>Search for a person to give them permission to edit this form and see its responses.</span>
+                    </span>
+                </label>
+                <input type="text" name="add_owner" id="add_owner">
+                <p style="margin-top: -1em;font-style: italic;">You must save the form for the new owner to take effect. If you need to remove an owner, please email Intranet support.</p>
+                <input type="hidden" name="owner_stub" id="owner_stub">
+            </fieldset>
+          {% endif %}
 
         </div> <!-- /.form-options -->
 
@@ -279,5 +306,19 @@
       $('.save-form-button').click(); //handle any unsaved changes if user unexpectedly leaves the page
     });
     {% endif %}
+
+    $(".owner input").keypress(function(event) {
+      if (event.which == 13) {
+        event.preventDefault();
+      }
+    });
+
+    $("#add_owner").autocomplete({
+      source: "{% url "search:persons_json" %}",
+      select: function(event, ui) {
+        $("#add_owner").attr("value", ui.item.label);
+        $("#owner_stub").attr("value", ui.item.stub);
+      }
+    });
 
 {% endblock "js_ready" %}

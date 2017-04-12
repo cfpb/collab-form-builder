@@ -2,6 +2,7 @@ from datetime import date
 from hashlib import md5
 import re
 
+from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _, ugettext
 from collab.settings import AUTH_USER_MODEL
@@ -46,7 +47,7 @@ def unique_slug(item, slug_source, slug_field):
 
 
 class Form(models.Model):
-    owner = models.ForeignKey(AUTH_USER_MODEL)
+    owner = models.ManyToManyField(AUTH_USER_MODEL, null=True)
     title = models.CharField(_("Title"),
                              max_length=255,
                              help_text=_("Give your form a name."))

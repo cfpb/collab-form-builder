@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 
+from core.models import Person
 from core.notifications.email import EmailInfo
 from core.notifications.models import Notification
 
@@ -74,7 +75,8 @@ def new(req):
 
     if form_form.is_valid() and field_form_set.is_valid():
         custom_form = form_form.save(commit=False)
-        custom_form.owner = req.user
+        custom_form.save()
+        custom_form.owner.add(req.user)
         custom_form.save()
         field_form_set = FieldFormSet(req.POST, instance=custom_form)
         if field_form_set.is_valid():
@@ -105,9 +107,14 @@ def edit(req, id):
     context = RequestContext(req)
     context['compact_header'] = 'compact-header'
     context["use_form_autosave"] = use_form_autosave
+    context['custom_form'] = custom_form
 
     if form_form.is_valid() and field_form_set.is_valid():
         custom_form = form_form.save()
+        if req.POST['owner_stub']:
+            person = Person.objects.get(stub=req.POST.get('owner_stub', '').strip())
+            collab_user = person.user
+            custom_form.owner.add(collab_user)
         field_form_set.save()
 
         try:
@@ -165,7 +172,7 @@ def edit(req, id):
                       form_action=reverse('form_builder:edit',
                       args=[custom_form.slug]),
                       templates=create_templates()),
-        context_instance=context)
+                      context_instance=context)
 
 
 @login_required
@@ -192,7 +199,7 @@ def respond(req, id):
                 (req.user.first_name, req.user.last_name, user_form)
             url = "/forms/results/%s/" % user_form.slug
 
-            if user_form.owner != req.user:
+            if req.user not in user_form.owner.all():
                 if user_form.collect_users:
                     title = '%s %s submitted the "%s" form' % \
                         (req.user.first_name, req.user.last_name, user_form)
@@ -203,11 +210,15 @@ def respond(req, id):
                     text_template = 'form_respond_anonymous.txt'
                     html_template = 'form_respond_anonymous.html'
 
+                recipient_list = ''
+                for o in user_form.owner:
+                    recipient_list += o.email + ';'
+
                 email_info = EmailInfo(
                     subject=title,
                     text_template='form_builder/email/%s' % text_template,
                     html_template='form_builder/email/%s' % html_template,
-                    to_address=user_form.owner.email
+                    to_address=recipient_list
                 )
 
                 Notification.set_notification(req.user, req.user, "submitted",
