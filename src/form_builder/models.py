@@ -51,13 +51,19 @@ class Form(models.Model):
     title = models.CharField(_("Title"),
                              max_length=255,
                              help_text=_("Give your form a name."))
-    slug = models.SlugField(_("Slug"),
+    slug = models.SlugField(_("URL slug"),
                             editable=True,
                             unique=True,
                             max_length=255,
                             blank=True,
-                            help_text=_("This will modify the URL.")
-                            )
+                            help_text=_("Choose a custom URL slug for this "
+                                        "form. For example, if you enter "
+                                        "'my-first-form' (without the "
+                                        "quotes), the URL to share will be "
+                                        "/forms/respond/my-first-form/. "
+                                        " If not set, the default is to use "
+                                        "the form's name in lowercase with "
+                                        "dashes instead of spaces."))
     instructions = models.TextField(_("Form instructions"),
                                     null=True,
                                     blank=True,
