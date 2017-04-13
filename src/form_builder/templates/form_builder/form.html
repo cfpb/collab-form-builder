@@ -81,6 +81,20 @@
                 {{ form.title.errors }}
             </fieldset>
 
+            <fieldset class="{{ form.slug.html_name }}">
+                <label for="{{ form.slug.auto_id }}">
+                    {{ form.slug.label }}
+                    {% if form.slug.help_text %}
+                        <span class="help_text">
+                            <i class="icon-question-sign" title="{{ form.slug.help_text }}"></i>
+                            <span>{{ form.slug.help_text }}</span>
+                        </span>
+                    {% endif %}
+                </label>
+                {{ form.slug }}
+                {{ form.slug.errors }}
+            </fieldset>
+
             <fieldset class="{{ form.instructions.html_name }}">
                 <label for="{{ form.instructions.auto_id }}">
                     {{ form.instructions.label }}
