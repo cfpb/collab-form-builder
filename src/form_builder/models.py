@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import date
 from hashlib import md5
 import re
@@ -59,11 +60,16 @@ class Form(models.Model):
                             help_text=_("Choose a custom URL slug for this "
                                         "form. For example, if you enter "
                                         "'my-first-form' (without the "
-                                        "quotes), the URL to share will be "
+                                        "quotes), the link to share will be "
                                         "/forms/respond/my-first-form/. "
-                                        " If not set, the default is to use "
+                                        "If not set, the default is to use "
                                         "the form's name in lowercase with "
-                                        "dashes instead of spaces."))
+                                        "dashes instead of spaces. If you "
+                                        "change this after sending out "
+                                        "a link for people to respond, "
+                                        "those existing links will break, "
+                                        "and you'll need to send the new "
+                                        "link out to people."))
     instructions = models.TextField(_("Form instructions"),
                                     null=True,
                                     blank=True,
@@ -110,11 +116,12 @@ class Form(models.Model):
 
     def duplicate(self):
         field_set = self.field_set.all()
-        obj = self
+        obj = deepcopy(self)
         obj.pk = None
         obj.slug = None
         obj.title = obj.title + " (Copy)"
         obj.save()
+        obj.owner = self.owner.all()
         for field in field_set:
             field.duplicate(obj)
         return obj
