@@ -199,7 +199,7 @@ def respond(req, id):
                 (req.user.first_name, req.user.last_name, user_form)
             url = "/forms/results/%s/" % user_form.slug
 
-            if req.user not in user_form.owner.all():
+            if user_form.owner.exists():
                 if user_form.collect_users:
                     title = '%s %s submitted the "%s" form' % \
                         (req.user.first_name, req.user.last_name, user_form)
@@ -210,20 +210,17 @@ def respond(req, id):
                     text_template = 'form_respond_anonymous.txt'
                     html_template = 'form_respond_anonymous.html'
 
-                recipient_list = ''
-                for o in user_form.owner:
-                    recipient_list += o.email + ';'
-
-                email_info = EmailInfo(
-                    subject=title,
-                    text_template='form_builder/email/%s' % text_template,
-                    html_template='form_builder/email/%s' % html_template,
-                    to_address=recipient_list
-                )
-
-                Notification.set_notification(req.user, req.user, "submitted",
-                                              user_form, user_form.owner,
-                                              title, url, email_info)
+                for o in user_form.owner.all():
+                    if o != req.user:
+                        email_info = EmailInfo(
+                            subject=title,
+                            text_template='form_builder/email/%s' % text_template,
+                            html_template='form_builder/email/%s' % html_template,
+                            to_address=o.email
+                        )
+                        Notification.set_notification(req.user, req.user, "submitted",
+                                                      user_form, o,
+                                                      title, url, email_info)
 
             return HttpResponseRedirect(reverse('form_builder:form_thanks',
                                                 args=[form_response.pk]))
