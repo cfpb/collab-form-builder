@@ -73,7 +73,7 @@
                         {% endif %}
                         </a>
                     </td>
-                    <td>{{ response.submission_date }}</td>
+                    <td>{{ response.submission_date | date:"M. d, Y, g:i A" }}</td>
                     <td>{% if response.archived %}Archived{% else %}New{% endif %}</td>
                     <td>
                         {% if response.archived %}
@@ -102,11 +102,16 @@
 {% block "js_scripts" %}
     <script src="{{ STATIC_URL }}js/form-builder.min.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+    <script src="{{ STATIC_URL }}js/moment.min.js"></script>
+    <script src="{{ STATIC_URL }}js/datetime-moment.js"></script>
 {% endblock %}
 
 {% block "js_ready" %}
+  $.fn.dataTable.moment( 'MMM. D, YYYY, h:mm A' );
   $('#results-table').dataTable({
-    "aaSorting": [ [1, "asc"] ],
+    "aaSorting": [ 
+      [1, "desc"] 
+    ],
     "aoColumnDefs": [
       { "bSortable": false, "aTargets": [ 3 ] }
     ],
