@@ -101,12 +101,17 @@
 
 {% block "js_scripts" %}
     <script src="{{ STATIC_URL }}js/form-builder.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/1.10.16/sorting/datetime-moment.js"></script>
 {% endblock %}
 
 {% block "js_ready" %}
+  $.fn.dataTable.moment( 'MMM, D, YYYY, H:mm' );
   $('#results-table').dataTable({
-    "aaSorting": [ [1, "asc"] ],
+    "aaSorting": [ 
+      [1, "desc"] 
+    ],
     "aoColumnDefs": [
       { "bSortable": false, "aTargets": [ 3 ] }
     ],
