@@ -109,6 +109,9 @@ class Form(models.Model):
     def get_absolute_url(self):
         return reverse('form_builder:respond', args=(self.slug,))
 
+    def owners(self):
+        # Return a list of owners for the admin table
+        return ", ".join(self.owner.values_list('email', flat=True))
 
     def save(self, *args, **kwargs):
         unique_slug(self, 'title', 'slug')
@@ -228,7 +231,7 @@ class AnonymousResponseManager(models.Manager):
         hash = AnonymousResponse.objects.create_hash(form_id, username)
         anonymous_response = AnonymousResponse(hash=hash)
         anonymous_response.save()
-        
+
     def check_dupe(self, form_id, username):
         hash = self.create_hash(form_id, username)
         dupe = AnonymousResponse.objects.filter(hash=hash)
@@ -242,16 +245,16 @@ class AnonymousResponse(models.Model):
     the log saves an md5 hash of the username of the person responding to
     a form and the id of the form itself. this makes it possible to have
     a reponse that is anonymous to the form creator but available in the case
-    that this information is needed from security or human capital. 
-    
+    that this information is needed from security or human capital.
+
     to retreive the username stored in a hash, create a hash of all users
-    with the form id of the form submission in question then find the 
+    with the form id of the form submission in question then find the
     response hash in that list of all users.
-    
-    this log also makes it possible to ensure that a user isn't able to 
-    respond to a form multiple times. 
+
+    this log also makes it possible to ensure that a user isn't able to
+    respond to a form multiple times.
     """
-    
+
     hash = models.CharField(max_length=32)
     submission_date = models.DateTimeField(auto_now_add=True)
     objects = AnonymousResponseManager()
