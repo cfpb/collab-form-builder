@@ -9,7 +9,7 @@ class FieldInline(admin.StackedInline):
 
 class FormAdmin(admin.ModelAdmin):
     inlines = [FieldInline]
-    list_display = ['title', 'date_created', 'end_date']
+    list_display = ['title', 'owners', 'date_created', 'end_date']
     search_fields = ['title', 'owner__email']
 
 
